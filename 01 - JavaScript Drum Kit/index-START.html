@@ -58,6 +58,89 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
+// catch click event
+
+var soundController = (function(){
+  
+  return {
+    playSound: function(sound){
+      
+      // startPlaying(key);
+      sound.currentTime = 0;
+      sound.play();
+    }
+  }
+}());
+
+var UIController = (function(){
+  var DOMElements = {
+    keys: Array.from(document.querySelectorAll('.key')),
+    getKeyElement: function(key){
+      return document.querySelector('div[data-key="' + key + '"]');
+    },
+    getSoundElement: function(key){
+      return document.querySelector('audio[data-key="' + key + '"]');
+    }
+  }
+
+  return {
+    getKey: function(e){
+      return {
+        key: e.key.toUpperCase().charCodeAt()
+      }
+    },
+    
+    startPlaying: function(key){
+      const element = DOMElements.getKeyElement(key)
+      element.classList.add('playing');
+    }, 
+
+    endPlaying: function(e){
+      e.target.classList.remove('playing');
+    },
+
+    getDOMElements: function(){
+      return DOMElements;
+    }
+  }
+
+}())
+
+// review how to constract an array from a list of element
+
+
+var appController = (function(soundCtrl, UICtrl){
+  var playKeySound = function(e){
+    var key, soundElement;
+    
+    // get the key being pressed
+    key = UICtrl.getKey(e).key;
+    
+    // transition UI
+    UICtrl.startPlaying(key)
+    
+    // play sound
+    soundElement = UICtrl.getDOMElements().getSoundElement(key);
+    soundCtrl.playSound(soundElement);
+  }
+  
+  var setupEventListener = function(){
+    var DOM = UICtrl.getDOMElements();
+    DOM.keys.forEach(function(key){
+      key.addEventListener('transitionend', UICtrl.endPlaying);
+    });
+    window.addEventListener('keydown', playKeySound);
+  }
+
+  
+  return {
+    init: function(){
+      setupEventListener();
+    }
+  }
+}(soundController, UIController));
+
+appController.init();
 
 </script>
 
