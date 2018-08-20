@@ -62,12 +62,87 @@
       background:black;
       position: absolute;
       top:50%;
+      transform-origin: 100%;
+      transform: rotate(90deg);
+      transition: all 0.05s;
+      transition-timing-function: cubic-bezier(0, 1.91, 0.58, 1);
     }
 
   </style>
 
   <script>
+    var timeController = (function(){
+      function setTime(){
+        const now = new Date();
+        const second = now.getSeconds();
+        const minute = now.getMinutes();
+        const hour = now.getHours();
+        console.log('Time is ' + hour + ':' + minute + ':' + second);
+        return {
+          hour: hour, 
+          minute: minute, 
+          second: second
+        }
+      };
 
+      function setDegree(){
+        const now = setTime();
+        const secDeg = now.second * 6;
+        const minDeg = now.minute * 6;
+        const hourDeg = (now.hour * 30) + (now.minute * 0.5);
+        return {
+          secDeg: secDeg,
+          minDeg: minDeg, 
+          hourDeg: hourDeg
+        }
+      }
+
+      return {
+        setDegree: setDegree
+      }
+    })();
+    
+    var UIController = (function(){
+      var DOMElements = {
+        secHand: document.querySelector('.second-hand'),
+        minHand: document.querySelector('.min-hand'),
+        hourHand: document.querySelector('.hour-hand')
+      }
+
+      function updateDeg(degs){
+        var degs = degs()
+        DOMElements.secHand.style.transform = "rotate(" + (90+degs.secDeg) + "deg)";
+        DOMElements.minHand.style.transform = "rotate(" + (90+degs.minDeg) + "deg)";
+        DOMElements.hourHand.style.transform = "rotate(" + (90+degs.hourDeg) + "deg)"
+      }
+
+      return {
+        updateDeg: updateDeg
+      }
+
+    })();
+
+    var appController = (function(timeCtrl, UICtrl){
+      function setClock(){
+        var degs = timeCtrl.setDegree;
+        UICtrl.updateDeg(degs);
+      }
+
+      return {
+        setClock: setClock
+      }
+
+    })(timeController, UIController);
+
+    var interval = setInterval(appController.setClock, 1000);    
+
+    // var timeController = (function(){
+      
+    // })();
+
+    // var mainController = (function(timeCtrl, UIController){
+
+    // })(timeController, UIController);
 
   </script>
 </body>
