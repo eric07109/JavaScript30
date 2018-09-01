@@ -18,7 +18,7 @@
     <input id="base" type="color" name="base" value="#ffc600">
   </div>
 
-  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
+  <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500" class = 'targetImg'>
 
   <style>
 
@@ -42,9 +42,28 @@
     input {
       width:100px;
     }
+
+    .targetImg {
+      padding: var(--spacing);
+      background: var(--base);
+      filter:blur(var(--blur));
+    }
   </style>
 
   <script>
+    const inputs = document.querySelectorAll('.controls input');
+    console.log(inputs);
+
+    function update(){
+      console.log(`${this.name}: ${this.value}`);
+      // document.querySelector('.targeting')
+      const suffix = this.dataset.sizing || '';
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix)
+    }
+
+    inputs.forEach(input => input.addEventListener('change', update));
+    inputs.forEach(input => input.addEventListener('mousemove', update));
+
   </script>
 
 </body>
